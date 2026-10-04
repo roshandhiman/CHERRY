@@ -2,4 +2,5 @@
 # print(os.listdir("."))
 import os
 def list_files(path):
-    return os.listdir(path)
+    files=os.listdir(path)
+    return {"path":path,"files":files}

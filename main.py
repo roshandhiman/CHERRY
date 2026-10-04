@@ -4,18 +4,41 @@ from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider 
 from tools.files import list_files
 # print(list_files("."))
-model=OpenAIChatModel("qwen2.5-coder:7b",
-                  provider=OpenAIProvider(base_url="http://localhost:11434/v1"))
+provider=OpenAIProvider(base_url="http://localhost:11434/v1",
+                        api_key="ollama")
+model=OpenAIChatModel("qwen2.5:1.5b",
+                #provider=OpenAIProvider(base_url="http://localhost:11434/v1"))
+                provider=provider)
 agent=Agent(model,
-            system_prompt="Your are CHERRY a helfup personal AI " \
-            "assistant you are like a brother to all " \
-            "you have a very good brain think proepr like human before answeringg"
-            "is user ask to sho the files you can use the tools to show the files instead of askign to the user  .. do it own")
-# @agent.tool
-@agent.tool_plain
-def get_files(path:str):
-    return list_files(path)
+            system_prompt=("""
+You are CHERRY, a personal AI assistant.
 
+When the user asks about files or directories,
+
+use the available tools.
+
+IMPORTANT:
+
+- Never invent filenames.
+
+- Never modify, rename, or generate filenames.
+
+- Only report filenames that are returned by the tool.
+
+- If the tool returns many files, summarize them instead of inventing anything.
+
+- If a tool returns an error, clearly report the error.
+"""))
+# @agent.tool
+# @agent.tool_plain
+# def get_files(path:str):
+#     return list_files(path)
+@agent.tool_plain
+def get_files(path: str):
+    result=list_files(path)
+    print("TOOL RESULT:",result)
+    return result
+print(agent)
 while True:
     user=input("YOU : ")
     # if user.lower()==("exit") or ("bye"):
