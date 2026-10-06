@@ -43,11 +43,14 @@ def read_files(path:str):
     """
     print("READ TOOL CALLED :",path)
     return read_file(path)
-while True:
-    user=input("YOU : ")
-    # if user.lower()==("exit") or ("bye"):
-    #     break
-    if user.lower()=="exit" or user.lower()=="bye":
-        break
-    r=agent.run_sync(user)
-    print("CHERRY : ",r.output)
+# while True:
+#     user=input("YOU : ")
+#     # if user.lower()==("exit") or ("bye"):
+#     #     break
+#     if user.lower()=="exit" or user.lower()=="bye":
+#         break
+#     r=agent.run_sync(user)
+#     print("CHERRY : ",r.output)
+def ask_cherry(user):
+    r = agent.run_sync(user)
+    return r.output
