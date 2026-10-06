@@ -9,7 +9,7 @@ chat=tk.Text(
     window,
     bg="black",
     fg="white",
-    font=("Arial",14)
+    font=("Arial",14),height=15
 )
 chat.pack(
     padx=20,pady=20,fill="both",expand=True
@@ -22,6 +22,6 @@ def send_message():
     resp=ask_cherry(user)
     chat.insert(tk.END,"CHERRY -> "+resp+"\n")
     input_box.delete(0,tk.END)
-send_button=tk.BUtton(window,text="SEND",command=send_message)
+send_button=tk.Button(window,text="SEND",command=send_message)
 send_button.pack()
 window.mainloop()
