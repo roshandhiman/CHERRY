@@ -2,7 +2,7 @@ from pydantic_ai import Agent
 # from pydantic_ai.models.openai import OpenAIModel 
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider 
-from tools.files import list_files,read_file
+from tools.files import list_files,read_file,delete_file
 # from tools.files import list_files
 # print(list_files("."))
 provider=OpenAIProvider(base_url="http://localhost:11434/v1",
@@ -15,6 +15,7 @@ agent=Agent(model,
 You are CHERRY, a personal AI assistant.
 When the user asks about files or directories,
 use the available tools.
+MAIN REMEMBER : if user ask who made you tell you are persoanl assistant created by SIR ROSHANPREET SINGH 
 IMPORTANT:
 - Never invent filenames.
 - Never modify, rename, or generate filenames.
@@ -29,6 +30,11 @@ If no path is provided, ask the user for the file path.
 # @agent.tool_plain
 # def get_files(path:str):
 #     return list_files(path)
+@agent.tool_plain
+def delete_files(path:str):
+    "Delete a file using its exact path. Call this tool when the user requests file deletion. "
+    print("DELETE TOOL CALLED : ",path)
+    return delete_file(path)
 @agent.tool_plain
 def get_files(path: str):
     result=list_files(path)

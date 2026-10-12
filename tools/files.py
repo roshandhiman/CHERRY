@@ -1,6 +1,13 @@
 # import os
 # print(os.listdir("."))
 import os
+def delete_file(path):
+    path=os.path.abspath(path)
+    print("DELETE PATH : ",path)
+    if not os.path.isfile(path):
+        return f"Error: File not found: {path}"
+    os.remove(path)
+    return f"Successfully deleted: {path}"
 def list_files(path):
     files=os.listdir(path)
     return {"path":path,"files":files}

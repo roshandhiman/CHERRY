@@ -2,7 +2,7 @@ import tkinter as tk
 from main import ask_cherry
 window=tk.Tk()
 window.title("CHERRY")
-window.geometry("700x500")
+window.geometry("500x700")
 window.configure(bg="black")
 # window.mainloop()
 chat=tk.Text(
