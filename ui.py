@@ -31,17 +31,42 @@ def send_message():
     chat.insert(tk.END, "YOU -> "+user+"\n")
     chat.insert(tk.END,"CHERRY -> ")
     input_box.delete(0,tk.END)
+    # def worker():
+    #     async def stream():
+    #         async for token in ask_cherry_stream(user):
+    #             window.after(0,lambda t=token:(
+    #                 chat.insert(tk.END,t),
+    #                 chat.insert(tk.END,"\n")
+    #             ))
+    #     asyncio.run(stream())
+    #     window.after(0,lambda: chat.insert(tk.END,"\n"))
+    # threading.Thread(target=worker,daemon=True).start()
     def worker():
         async def stream():
+            buffer=""
             async for token in ask_cherry_stream(user):
-                window.after(0,lambda t=token:(
+                buffer+=token
+                if len(buffer)>=3 or "\n" in buffer:
+                    text=buffer
+                    buffer=""
+                    window.after(0,lambda t=text:(
+                        chat.insert(tk.END,t),
+                        chat.see(tk.END)
+                    ))
+            if buffer:
+                window.after(0,lambda t=buffer:(
                     chat.insert(tk.END,t),
-                    chat.insert(tk.END,"\n")
+                    chat.see(tk.END)
                 ))
-        asyncio.run(stream())
-        window.after(0,lambda: chat.insert(tk.END,"\n"))
+            window.after(0,lambda: chat.insert(tk.END,"\n"))
+        try:
+            asyncio.run(stream())
+        except Exception as e :
+            window.after(
+                0,
+                lambda:chat.insert(tk.END,f"\nError: {e}\n")
+            )
     threading.Thread(target=worker,daemon=True).start()
-
 send_button=tk.Button(window,text="SEND",command=send_message)
 send_button.pack()
 window.mainloop()
