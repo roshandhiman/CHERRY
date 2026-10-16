@@ -11,7 +11,12 @@ provider=OpenAIProvider(base_url="http://localhost:11434/v1",
                         api_key="ollama")
 model=OpenAIChatModel("qwen3.5:9b",
                 #provider=OpenAIProvider(base_url="http://localhost:11434/v1"))
-                provider=provider)
+                provider=provider,
+                settings={
+                    "extra_body":{
+                        "think":False
+                    }
+                })
 agent=Agent(model,
             system_prompt=("""
 You are CHERRY, a personal AI assistant.
