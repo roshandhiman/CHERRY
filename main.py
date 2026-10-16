@@ -1,4 +1,5 @@
 from pydantic_ai import Agent 
+import asyncio
 # from pydantic_ai.models.openai import OpenAIModel 
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider 
@@ -57,6 +58,10 @@ def read_files(path:str):
 #         break
 #     r=agent.run_sync(user)
 #     print("CHERRY : ",r.output)
-def ask_cherry(user):
-    r = agent.run_sync(user)
-    return r.output
+# def ask_cherry(user):
+#     r = agent.run_sync(user)
+#     return r.output
+async def ask_cherry_stream(user):
+    async with agent.run_stream(user) as response:
+        async for text in response.stream_text(delta=True):
+            yield text 
