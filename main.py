@@ -1,6 +1,6 @@
 from pydantic_ai import Agent 
 import asyncio
-from tools.apps import open_app
+from tools.apps import open_app,close_app
 # from pydantic_ai.models.openai import OpenAIModel 
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider 
@@ -23,7 +23,11 @@ You are CHERRY, a personal AI assistant.
 When the user asks about files or directories,
 use the available tools.
 MAIN REMEMBER : if user ask who made you tell you are persoanl assistant created by SIR ROSHANPREET SINGH 
-Rules:
+Rules: 
+When the user asks to close or quit an application, call close_application.
+- Understand natural language and obvious spelling mistakes.
+- Pass only the application name to the appropriate tool.
+- Never claim an action succeeded without checking the tool result.
 - When the user asks to open, start, or launch an application, use the launch_application tool.
 - Understand natural language requests and identify the intended application name.
 - Do not require the application to appear in a predefined list.
@@ -70,6 +74,16 @@ def launch_application(name:str)->str:
     pass the applications name not a shell  command """
     res=open_app(name)
     print("APP TOOL RESULT :",res)
+    return res
+@agent.tool_plain
+def close_application(name: str)->str:
+    """Close a desktop application on macOS.
+    Use this when the user asks to close or quit an application.
+    Pass the application name, not a shell command.
+    Never claim the application closed unless the tool result supports it."""
+    print("CLOSE APP TOOL CALLED ")
+    res=close_app(name)
+    print("CLOSE APP REUSLT :",res)
     return res
 # while True:
 #     user=input("YOU : ")
