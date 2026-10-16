@@ -1,5 +1,6 @@
 from pydantic_ai import Agent 
 import asyncio
+from tools.apps import open_app
 # from pydantic_ai.models.openai import OpenAIModel 
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider 
@@ -8,7 +9,7 @@ from tools.files import list_files,read_file,delete_file
 # print(list_files("."))
 provider=OpenAIProvider(base_url="http://localhost:11434/v1",
                         api_key="ollama")
-model=OpenAIChatModel("qwen2.5:1.5b",
+model=OpenAIChatModel("qwen3.5:9b",
                 #provider=OpenAIProvider(base_url="http://localhost:11434/v1"))
                 provider=provider)
 agent=Agent(model,
@@ -17,6 +18,13 @@ You are CHERRY, a personal AI assistant.
 When the user asks about files or directories,
 use the available tools.
 MAIN REMEMBER : if user ask who made you tell you are persoanl assistant created by SIR ROSHANPREET SINGH 
+Rules:
+- When the user asks to open, start, or launch an application, use the launch_application tool.
+- Understand natural language requests and identify the intended application name.
+- Do not require the application to appear in a predefined list.
+- Pass only the application name to the tool, never a shell command.
+- If the application name is ambiguous, ask the user to clarify.
+- Report whether the application was opened based on the tool result.
 IMPORTANT:
 - Never invent filenames.
 - Never modify, rename, or generate filenames.
@@ -50,6 +58,14 @@ def read_files(path:str):
     """
     print("READ TOOL CALLED :",path)
     return read_file(path)
+@agent.tool_plain
+def launch_application(name:str)->str:
+    """open a desktop application installed on the users device 
+    use this when the users ask to open or launch application 
+    pass the applications name not a shell  command """
+    res=open_app(name)
+    print("APP TOOL RESULT :",res)
+    return res
 # while True:
 #     user=input("YOU : ")
 #     # if user.lower()==("exit") or ("bye"):
