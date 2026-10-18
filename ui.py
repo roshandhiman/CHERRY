@@ -2,6 +2,7 @@ import tkinter as tk
 from main import ask_cherry_stream
 import asyncio
 import threading
+from tools.voice import speak, set_muted
 window=tk.Tk()
 window.title("CHERRY")
 window.geometry("500x700")

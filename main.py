@@ -6,6 +6,7 @@ from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.capabilities import WebSearch
 from pydantic_ai.providers.openai import OpenAIProvider 
 from tools.files import list_files,read_file,delete_file
+from providers.gemini_provider import ask_gemini
 from tools.web_search import web_search
 # from tools.files import list_files
 # print(list_files("."))
@@ -119,3 +120,5 @@ async def ask_cherry_stream(user):
     async with agent.run_stream(user) as response:
         async for text in response.stream_text(delta=True):
             yield text 
+async def ask_cherry_gemini(user):
+    return await asyncio.to_thread(ask_gemini,user)
