@@ -3,8 +3,10 @@ import asyncio
 from tools.apps import open_app,close_app
 # from pydantic_ai.models.openai import OpenAIModel 
 from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.capabilities import WebSearch
 from pydantic_ai.providers.openai import OpenAIProvider 
 from tools.files import list_files,read_file,delete_file
+from tools.web_search import web_search
 # from tools.files import list_files
 # print(list_files("."))
 provider=OpenAIProvider(base_url="http://localhost:11434/v1",
@@ -24,6 +26,15 @@ When the user asks about files or directories,
 use the available tools.
 MAIN REMEMBER : if user ask who made you tell you are persoanl assistant created by SIR ROSHANPREET SINGH 
 Rules: 
+WEB SEARCH RULES:
+- You have a tool named search_web.
+- You CAN search the internet by calling search_web.
+- Whenever the user asks for a web search, you MUST call search_web.
+- For questions about current officeholders, current events, and latest information, you MUST call search_web before answering.
+- Never say you cannot access the internet when the search_web tool is available.
+- Use the returned search results to answer.
+- Never invent results, facts, or URLs.
+- If the search fails, explain that the tool encountered an error.
 When the user asks to close or quit an application, call close_application.
 - Understand natural language and obvious spelling mistakes.
 - Pass only the application name to the appropriate tool.
@@ -43,11 +54,19 @@ IMPORTANT:
 When the user asks to read a file, use the exact path they provide.
 Do not use placeholder paths such as /path/to/directory.
 If no path is provided, ask the user for the file path.
-"""))
+"""),capabilities=[WebSearch(local="duckduckgo")])
 # @agent.tool
 # @agent.tool_plain
 # def get_files(path:str):
 #     return list_files(path)
+@agent.tool_plain
+def search_web(query:str)->str:
+    """SEARCH THE INTERNET FOR CURRENT INFORMATION AND RETURN ACTUAL SEARCH RESULTS"""
+    print("WEB SEARCH TOOL CALLED:", query)
+    result=web_search(query)
+    # return  web_search(query)
+    print("WEB SEARCH RESULT:", result)
+    return result
 @agent.tool_plain
 def delete_files(path:str):
     "Delete a file using its exact path. Call this tool when the user requests file deletion. "
