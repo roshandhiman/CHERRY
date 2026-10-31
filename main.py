@@ -130,7 +130,22 @@ def close_application(name: str)->str:
 #         fallback_text=await ask_cherry_gemini(user)
 #         for ch in fallback_text:
 #             yield ch
+import re
+# async def ask_cherry_stream(user):
+#     async with agent.run_stream(user) as response:
+#         async for text in response.stream_text(delta=True):
+#             yield text
 async def ask_cherry_stream(user):
+    m_open=re.match(r"^(?:open|launch|start)\s+(.+)$",user.strip(),re.IGNORECASE)
+    if m_open:
+        res=open_app(m_open.group(1))
+        yield res
+        return
+    m_close=re.match(r"^(?:close|quit|kill)\s+(.+)$",user.strip(),re.IGNORECASE)
+    if m_close:
+        res=close_app(m_close.group(1))
+        yield res
+        return
     async with agent.run_stream(user) as response:
         async for text in response.stream_text(delta=True):
             yield text
