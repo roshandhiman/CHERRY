@@ -4,7 +4,7 @@ _muted=False
 def set_muted(value):
     global _muted 
     _muted = value 
-def spead(text):
+def speak(text):
     if _muted or not text.strip():
         return 
     def run():
