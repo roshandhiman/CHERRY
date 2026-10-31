@@ -19,17 +19,21 @@ deepseek_client=OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"),base_url="https://a
 nvidia_client=OpenAI(api_key=os.getenv("NVIDIA_API_KEY"),base_url="https://integrate.api.nvidia.com/v1")
 ollama_client=OpenAI(api_key="ollama",base_url="http://localhost:11434/v1")
 def ask_gemini(messages):
-    text="\n".join(f"{m['role']}: {m['content']}" for m in messages)
-    r=gemini_client.models.generate_content(model="gemini-2.5-flash",contents=text)
-    return r.text
-def ask_openai(messages):
-    r=openai_client.chat.completions.create(model="gpt-4o-mini",messages=messages)
-    return r.choices[0].message.content
+    sys=[m["content"] for m in messages if m["role"]=="system"]
+    chat=[m for m in messages if m["role"]!="system"]
+    contents="\n".join(f"{m['role']}: {m['content']}" for m in chat)
+    kw={}
+    if sys:
+        kw["config"]={"system_instruction":"\n".join(sys)}
+    r=gemini_client.models.generate_content(model="gemini-2.5-flash",contents=contents,**kw)
+    if r.text:
+        return r.text
+    raise RuntimeError("Empty response")
 def ask_groq(messages):
-    r=groq_client.chat.completions.create(model="llama-3.3-70b-versatile",messages=messages)
+    r=groq_client.chat.completions.create(model="openai/gpt-oss-20b",messages=messages)
     return r.choices[0].message.content
 def ask_openrouter(messages):
-    r=openrouter_client.chat.completions.create(model="mistralai/mistral-7b-instruct",messages=messages)
+    r=openrouter_client.chat.completions.create(model="meta-llama/llama-3.1-8b-instruct",messages=messages)
     return r.choices[0].message.content
 def ask_deepseek(messages):
     r=deepseek_client.chat.completions.create(model="deepseek-chat",messages=messages)
@@ -37,8 +41,10 @@ def ask_deepseek(messages):
 def ask_nvidia(messages):
     r=nvidia_client.chat.completions.create(model="meta/llama-3.1-70b-instruct",messages=messages)
     return r.choices[0].message.content
+def ask_openai(messages):
+    r=openai_client.chat.completions.create(model="gpt-4o-mini",messages=messages)
+    return r.choices[0].message.content
 def ask_ollama(messages):
-    text="\n".join(f"{m['role']}: {m['content']}" for m in messages)
     r=ollama_client.chat.completions.create(model="qwen3.5:9b",messages=messages,extra_body={"think":False})
     return r.choices[0].message.content
 def ask(messages):
@@ -47,8 +53,9 @@ def ask(messages):
     providers=[ask_gemini,ask_groq,ask_openrouter,ask_deepseek,ask_nvidia,ask_openai,ask_ollama]
     for fn in providers:
         try:
-            return fn(messages)
+            res=fn(messages)
+            if res:
+                return res
         except:
             continue
-    return "All models failed."
-
+    return ask_ollama(messages)

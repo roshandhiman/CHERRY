@@ -62,11 +62,9 @@ def send_message():
             window.after(0,lambda: chat.insert(tk.END,"\n"))
         try:
             asyncio.run(stream())
-        except Exception as e :
-            window.after(
-                0,
-                lambda:chat.insert(tk.END,f"\nError: {e}\n")
-            )
+        except Exception as e:
+            err=str(e)
+            window.after(0,lambda err_msg=err:chat.insert(tk.END,f"\nError: {err_msg}\n"))
     threading.Thread(target=worker,daemon=True).start()
 send_button=tk.Button(window,text="SEND",command=send_message)
 send_button.pack()
