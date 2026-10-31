@@ -12,14 +12,15 @@ from tools.web_search import web_search
 # print(list_files("."))
 provider=OpenAIProvider(base_url="http://localhost:11434/v1",
                         api_key="ollama")
-model=OpenAIChatModel("qwen3.5:9b",
-                #provider=OpenAIProvider(base_url="http://localhost:11434/v1"))
-                provider=provider,
-                settings={
-                    "extra_body":{
-                        "think":False
-                    }
-                })
+# model=OpenAIChatModel("qwen3.5:9b",
+#                 #provider=OpenAIProvider(base_url="http://localhost:11434/v1"))
+#                 provider=provider,
+#                 settings={
+#                     "extra_body":{
+#                         "think":False
+#                     }
+#                 })
+model=OpenAIChatModel("qwen2.5:1.5b",provider=provider)
 agent=Agent(model,
             system_prompt=("""
 You are CHERRY, a personal AI assistant.
@@ -120,14 +121,18 @@ def close_application(name: str)->str:
 #     async with agent.run_stream(user) as response:
 #         async for text in response.stream_text(delta=True):
 #             yield text 
+# async def ask_cherry_stream(user):
+#     try:
+#         async with agent.run_stream(user) as response:
+#             async for text in response.stream_text(delta=True):
+#                 yield text
+#     except Exception:
+#         fallback_text=await ask_cherry_gemini(user)
+#         for ch in fallback_text:
+#             yield ch
 async def ask_cherry_stream(user):
-    try:
-        async with agent.run_stream(user) as response:
-            async for text in response.stream_text(delta=True):
-                yield text
-    except Exception:
-        fallback_text=await ask_cherry_gemini(user)
-        for ch in fallback_text:
-            yield ch
-async def ask_cherry_gemini(user):
-    return await asyncio.to_thread(ask_gemini,user)
+    async with agent.run_stream(user) as response:
+        async for text in response.stream_text(delta=True):
+            yield text
+# async def ask_cherry_gemini(user):
+#     return await asyncio.to_thread(ask_gemini,user)
